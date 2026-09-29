@@ -1,0 +1,38 @@
+#######################################
+# Syntax Coloring Map for Esp32RmtOneWire
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+Esp32RmtOneWireBus	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+Scan	KEYWORD2
+ReadIdleLevel	KEYWORD2
+CheckPresence	KEYWORD2
+TraceSearch	KEYWORD2
+TraceReadRom	KEYWORD2
+GetDeviceCount	KEYWORD2
+GetAddress	KEYWORD2
+GetFamilyCode	KEYWORD2
+IsCrcValid	KEYWORD2
+PrintAddress	KEYWORD2
+PrintAll	KEYWORD2
+ComputeCrc8	KEYWORD2
+Reset	KEYWORD2
+WriteByte	KEYWORD2
+WriteBytes	KEYWORD2
+ReadBytes	KEYWORD2
+MatchRom	KEYWORD2
+SkipRom	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+ONE_WIRE_SCANNER_MAX_DEVICES	LITERAL1

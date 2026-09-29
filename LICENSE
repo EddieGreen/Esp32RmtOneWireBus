@@ -19,3 +19,11 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+This library vendors portions of Espressif's `onewire_bus` component
+(src/onewire_bus*.c/.h, src/onewire_crc.*, src/onewire_device.*, src/onewire_types.h)
+under the Apache License, Version 2.0. See NOTICE for details; those files
+retain their original SPDX headers and are not covered by the MIT license
+above.
