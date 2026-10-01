@@ -13,6 +13,26 @@ This library uses Espressif's `onewire_bus` component (vendored under `src/`) to
 reset/read/write time slots entirely in hardware via the RMT peripheral, removing any dependency on
 CPU/GPIO-call timing.
 
+## Reliability
+
+On some ESP32 variants (observed on ESP32-C5/C6), a 1-Wire reset pulse can occasionally fail to
+receive a presence pulse in time (`ESP-IDF` logs this as `1-wire.rmt: onewire_bus_rmt_reset(...):
+1-wire reset pulse receive timeout`, followed by `rmt: rmt_receive(...): channel not in enable
+state`). Once this happens, the underlying RMT RX channel does not recover on its own - every
+subsequent `Reset()` (and therefore every `MatchRom()`/`SkipRom()`/device read) would otherwise fail
+identically until the device is rebooted.
+
+`Reset()` now detects this and transparently recreates the hardware bus handle, then retries once,
+before reporting failure to the caller. In practice this means:
+
+- A single `E (...) 1-wire.rmt: ...` log line at startup (or occasionally mid-run) is expected and
+  benign - it is ESP-IDF's own log, emitted before this library's recovery logic runs, and cannot be
+  suppressed without hiding genuine future errors from the same component.
+- The *cycle* in which the failure occurred will report no reading for any device on the bus (the
+  broadcast reset never got a valid presence pulse), but the *next* `RequestAndRead()`/`Scan()` cycle
+  uses the freshly recreated bus and succeeds normally.
+- No manual intervention or reboot is required to recover.
+
 ## Features
 
 - Full ROM search (Maxim/Dallas AN187 algorithm) with CRC validation.
