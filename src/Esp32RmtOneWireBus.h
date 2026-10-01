@@ -115,7 +115,9 @@ public:
 	static uint8_t ComputeCrc8(const uint8_t* data, uint8_t length);
 
 	// Issues a reset pulse and reports whether a device answered with presence.
-	// Lazily creates the hardware bus handle on first use.
+	// Lazily creates the hardware bus handle on first use. If the underlying
+	// RMT channel pair has wedged (see Reset() implementation notes), this
+	// transparently recreates the bus handle and retries once.
 	bool Reset() const;
 
 	// Writes a single byte, least-significant bit first. Must follow a
@@ -144,6 +146,10 @@ private:
 	// Lazily creates the hardware (RMT-backed) 1-Wire bus handle on first use.
 	// Returns true if the handle is ready to use.
 	bool EnsureBus() const;
+
+	// Tears down and recreates the hardware bus handle (used to recover from
+	// a wedged RMT channel - see Reset() implementation notes).
+	void RecreateBus() const;
 
 	uint8_t busPin;
 	mutable void* busHandle = nullptr; // onewire_bus_handle_t, opaque here to keep this header portable

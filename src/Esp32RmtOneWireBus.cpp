@@ -182,6 +182,15 @@ bool Esp32RmtOneWireBus::EnsureBus() const
 	return true;
 }
 
+void Esp32RmtOneWireBus::RecreateBus() const
+{
+	if (busHandle != nullptr)
+	{
+		onewire_bus_del(ToHandle(busHandle));
+		busHandle = nullptr;
+	}
+}
+
 uint8_t Esp32RmtOneWireBus::ComputeCrc8(const uint8_t* data, uint8_t length)
 {
 	return onewire_crc8(0, const_cast<uint8_t*>(data), length);
@@ -189,6 +198,17 @@ uint8_t Esp32RmtOneWireBus::ComputeCrc8(const uint8_t* data, uint8_t length)
 
 bool Esp32RmtOneWireBus::Reset() const
 {
+	if (!EnsureBus())
+		return false;
+
+	if (onewire_bus_reset(ToHandle(busHandle)) == ESP_OK)
+		return true;
+
+	// The RMT RX channel can wedge after a failed reset (observed on
+	// ESP32-C5/C6: "rmt_receive channel not in enable state") and never
+	// recovers on its own - every subsequent reset then fails identically.
+	// Recreate the hardware bus handle once and retry before giving up.
+	RecreateBus();
 	if (!EnsureBus())
 		return false;
 
